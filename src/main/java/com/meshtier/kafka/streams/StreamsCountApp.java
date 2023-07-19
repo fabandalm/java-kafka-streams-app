@@ -8,6 +8,7 @@ import org.apache.kafka.streams.StreamsConfig;
 import org.apache.kafka.streams.kstream.KStream;
 import org.apache.kafka.streams.kstream.KTable;
 import org.apache.kafka.streams.kstream.Named;
+import org.apache.kafka.streams.kstream.Produced;
 
 import java.util.Arrays;
 import java.util.Properties;
@@ -38,6 +39,8 @@ public class StreamsCountApp {
                 .selectKey((key, word) -> word)
                 .groupByKey()
                 .count(Named.as("Counts"));
+
+        wordCounts.toStream().to("word-count-output", Produced.with(Serdes.String(),Serdes.Long()));
 
         KafkaStreams streams = new KafkaStreams(builder.build(), config);
         streams.start();
